@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'attendance',
     'leave_request',
     'departments',
-    'audit_log',
+    'auditlog',
     'reports'
 ]
 
