@@ -1,9 +1,16 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-# Create your models here.
 
 class LeaveRequest(models.Model):
+    """
+    Model representing a leave request submitted by an employee.
+
+    Tracks the type of leave, the employee requesting it, the time frame,
+    and the status of the request (Pending, Approved, or Rejected).
+    Also records who reviewed the request and when.
+    """
+
     LEAVE_TYPES = [
         ('Annual Leave','Annual Leave'),
         ('Maternity Leave','Maternity Leave'),

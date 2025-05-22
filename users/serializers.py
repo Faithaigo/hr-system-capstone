@@ -4,16 +4,39 @@ from .models import UserProfile
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the built-in Django User model.
+
+    Fields:
+        - username
+        - email
+        - first_name
+        - last_name
+        - password (write-only for security)
+
+    Handles creating and updating user instances, including securely
+    setting the password.
+    """
+
     class Meta:
         model = User
         fields = ['username', 'email', 'first_name', 'last_name', 'password']
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
+        """
+        Create and return a new user with an encrypted password.
+        Uses `create_user()` which automatically handles password hashing.
+        """
         user = User.objects.create_user(**validated_data)
         return user
 
     def update(self, instance, validated_data):
+        """
+        Update an existing user instance.
+        If a password is provided, it is set securely using `set_password`.
+        Other fields are updated directly.
+        """
         password = validated_data.pop('password', None)
 
         instance.username = validated_data.get('username', instance.username)
@@ -29,6 +52,13 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the UserProfile model.
+
+    Includes a nested UserSerializer to handle user account creation
+    or updates alongside the profile.
+    """
+
     user = UserSerializer()
 
     class Meta:
@@ -36,12 +66,24 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'department', 'role', 'position', 'phone', 'address', 'profile_image']
 
     def create(self, validated_data):
+        """
+        Create a new User and UserProfile.
+
+        Extracts user data from the nested serializer, creates the User,
+        then creates the profile associated with that user.
+        """
         user_data = validated_data.pop('user')
         user = User.objects.create_user(**user_data)
         profile = UserProfile.objects.create(user=user, **validated_data)
         return profile
 
     def update(self, instance, validated_data):
+        """
+        Update an existing UserProfile and nested User.
+
+        Handles both profile field updates and nested user field updates.
+        Uses `partial=True` to allow partial updates.
+        """
         user_data = validated_data.pop('user', {})
 
         if user_data:
