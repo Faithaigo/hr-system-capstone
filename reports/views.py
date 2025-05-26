@@ -3,9 +3,11 @@ from django.contrib.auth.models import User
 from attendance.models import Attendance
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from datetime import date
+from datetime import date, datetime
 from calendar import monthrange
 from leave_request.models import LeaveRequest
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 
 class DailyTeamAttendanceReport(APIView):
@@ -21,6 +23,12 @@ class DailyTeamAttendanceReport(APIView):
      """
     permission_classes = [IsAuthenticated]
 
+
+    date_param = openapi.Parameter(
+        'date', openapi.IN_QUERY, description="Date in YYYY-MM-DD format", type=openapi.TYPE_STRING, required=False
+    )
+
+    @swagger_auto_schema(manual_parameters=[date_param])
     def get(self, request):
         today = request.query_params.get('date')
         report = []
@@ -55,9 +63,20 @@ class MonthlyEmployeeAttendanceReport(APIView):
 
     permission_classes = [IsAuthenticated]
 
+    user_param = openapi.Parameter(
+        'user_id', openapi.IN_QUERY, description="User ID", type=openapi.TYPE_INTEGER, required=True
+    )
+    month_param = openapi.Parameter(
+        'month', openapi.IN_QUERY, description="Moth in YYYY-MM format", type=openapi.TYPE_STRING, required=False
+    )
+
+    @swagger_auto_schema(manual_parameters=[month_param, user_param])
     def get(self, request):
         month_str = request.query_params.get('month')
         user_id = request.query_params.get("user_id")
+
+        if not month_str:
+            month_str = datetime.now().strftime('%Y-%m')
 
         year = int(month_str.split('-')[0])
         month = int(month_str.split('-')[1])
@@ -100,6 +119,11 @@ class EmployeeLeaveHistoryReport(APIView):
 
     permission_classes = [IsAuthenticated]
 
+    employee_param = openapi.Parameter(
+        'employee_id', openapi.IN_QUERY, description="Employee ID", type=openapi.TYPE_INTEGER, required=True
+    )
+
+    @swagger_auto_schema(manual_parameters=[employee_param])
     def get(self, request):
         employee_id = request.query_params.get("employee_id")
 

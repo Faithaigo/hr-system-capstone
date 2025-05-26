@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'leave_request',
     'departments',
     'auditlog',
-    'reports'
+    'reports',
+    'drf_yasg'
 ]
 
 MIDDLEWARE = [
@@ -113,9 +114,20 @@ AUTH_PASSWORD_VALIDATORS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication'
     ]
+}
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header',
+            'description': 'JWT Authorization header using the Bearer scheme. Example: "Bearer <your_token>"',
+        }
+    },
+    'USE_SESSION_AUTH': False,
 }
 
 # Internationalization
