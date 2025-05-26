@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from datetime import date
 from calendar import monthrange
+from leave_request.models import LeaveRequest
 
 
 class DailyTeamAttendanceReport(APIView):
@@ -76,6 +77,46 @@ class MonthlyEmployeeAttendanceReport(APIView):
                 "time_in":attendance.clock_in_time,
                 "time_out": attendance.clock_out_time,
                 "status":attendance.status
+            })
+
+        return Response(data)
+
+
+class EmployeeLeaveHistoryReport(APIView):
+    """
+    API endpoint to retrieve the leave history for a specific employee.
+
+    Query Parameters:
+        - employee_id (int): ID of the employee whose leave history is to be retrieved.
+
+    Returns a list of leave records with the following details:
+        - Date of request creation
+        - Leave start date
+        - Leave end date
+        - Status of the leave (Pending, Approved, Rejected)
+        - Reviewed timestamp
+        - Name of the reviewer (if available)
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        employee_id = request.query_params.get("employee_id")
+
+        leave_history = LeaveRequest.objects.filter(
+            employee_id = employee_id
+        )
+
+        data = []
+
+        for history in leave_history:
+            data.append({
+                "date":history.created_at,
+                "start_date":history.start_date,
+                "end_date": history.end_date,
+                "status":history.status,
+                "reviewed_at":history.reviewed_at,
+                "reviewed_by":history.reviewed_by.get_full_name() if history.reviewed_by else None
             })
 
         return Response(data)
