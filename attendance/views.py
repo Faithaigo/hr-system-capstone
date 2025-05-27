@@ -31,12 +31,12 @@ class AttendanceViewSet(viewsets.ModelViewSet):
         attendance, created = Attendance.objects.get_or_create(employee=user, date=today)
 
         if attendance.clock_in_time:
-            return Response({"detail":"You already clocked in"}, status=400)
+            return Response({"detail": "You already clocked in"}, status=400)
 
         attendance.clock_in_time = timezone.localtime(timezone.now()).time()
         attendance.status = 'Present'
         attendance.save()
-        return Response({"detail":"You've clocked in successfully"}, status=201)
+        return Response({"detail": "You've clocked in successfully"}, status=201)
 
     @action(detail=False, methods=['post'])
     def clock_out(self, request):
@@ -47,15 +47,14 @@ class AttendanceViewSet(viewsets.ModelViewSet):
         user = request.user
         today = timezone.localtime(timezone.now()).date()
 
-        try:
-            attendance = Attendance.objects.get(employee=user, date=today)
-        except Attendance.DoesNotExist:
+        attendance = Attendance.objects.filter(employee=user, date=today).first()
+        if not attendance:
             return Response({"detail": "You must clock in first"}, status=400)
 
         if not attendance.clock_in_time:
-            return Response({"detail":"You must clock in first"}, status=400)
+            return Response({"detail": "You must clock in first"}, status=400)
         if attendance.clock_out_time:
-            return Response({"detail":"You already clocked out"}, status=400)
+            return Response({"detail": "You already clocked out"}, status=400)
 
         now = timezone.localtime(timezone.now()).time()
 
@@ -64,7 +63,4 @@ class AttendanceViewSet(viewsets.ModelViewSet):
 
         attendance.clock_out_time = now
         attendance.save()
-        return Response({"detail":"You've clocked out successfully"}, status=201)
-
-
-
+        return Response({"detail": "You've clocked out successfully"}, status=201)
