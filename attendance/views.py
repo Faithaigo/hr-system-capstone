@@ -47,10 +47,11 @@ class AttendanceViewSet(viewsets.ModelViewSet):
         user = request.user
         today = timezone.localtime(timezone.now()).date()
 
-        attendance = Attendance.objects.get(employee=user, date=today)
+        try:
+            attendance = Attendance.objects.get(employee=user, date=today)
+        except Attendance.DoesNotExist:
+            return Response({"detail": "You must clock in first"}, status=400)
 
-        if not attendance:
-            return Response({"detail":"You must clock in first"}, status=400)
         if not attendance.clock_in_time:
             return Response({"detail":"You must clock in first"}, status=400)
         if attendance.clock_out_time:

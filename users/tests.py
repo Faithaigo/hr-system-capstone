@@ -75,6 +75,26 @@ class EmployeeViewSetTests(APITestCase):
         self.assertTrue(UserProfile.objects.filter(position='Developer').exists())
         self.assertTrue(AuditLog.objects.filter(action="Created newuser@gmail.com").exists())
 
+    def test_create_employee_as_non_admin_forbidden(self):
+        self.client.force_authenticate(user=self.user)
+        payload = {
+            "user": {
+                "username": "newuser",
+                "password": "newpass",
+                "first_name": "newfirstname",
+                "last_name": "newlastname",
+                "email": "newuser@gmail.com",
+            },
+            "role": "EMPLOYEE",
+            "department": self.department.id,
+            "position": "Developer",
+            "phone": "5555",
+            "address": "New Addr"
+        }
+
+        response = self.client.post('/employees/', payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
     def test_update_employee_as_non_admin_forbidden(self):
         self.client.force_authenticate(user=self.user)
         payload = {
