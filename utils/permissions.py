@@ -1,4 +1,5 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
+from users.models import UserProfile
 
 
 class ReadOnlyOrAdminEdit(BasePermission):
@@ -8,9 +9,8 @@ class ReadOnlyOrAdminEdit(BasePermission):
     """
     def has_permission(self, request, view):
         if request.method in SAFE_METHODS:
-            return request.user.is_authenticated
-        profile = getattr(request.user, 'userprofile', None)
-        return (
-            request.user.is_authenticated and
-            profile and profile.role in ['ADMIN', 'HR', 'MANAGER']
-        )
+            return True
+
+        profile = UserProfile.objects.filter(user=request.user).first()
+        if request.user.is_authenticated and profile and profile.role in ["ADMIN", "HR", "MANAGER"]:
+            return True
