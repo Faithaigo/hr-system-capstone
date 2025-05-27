@@ -36,7 +36,6 @@ class DailyTeamAttendanceReport(APIView):
         users = User.objects.all()
         for user in users:
             attendance = Attendance.objects.filter(employee=user, date=today).first()
-            print(attendance)
             report.append({
                 "employee":user.get_full_name(),
                 "employee_id":user.id,
