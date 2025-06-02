@@ -9,6 +9,8 @@ from leave_request.models import LeaveRequest
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
+from users.models import UserProfile
+
 
 class DailyTeamAttendanceReport(APIView):
     """
@@ -25,7 +27,7 @@ class DailyTeamAttendanceReport(APIView):
 
 
     date_param = openapi.Parameter(
-        'date', openapi.IN_QUERY, description="Date in YYYY-MM-DD format", type=openapi.TYPE_STRING, required=False
+        "date", openapi.IN_QUERY, description="Date in YYYY-MM-DD format", type=openapi.TYPE_STRING, required=False
     )
 
     @swagger_auto_schema(manual_parameters=[date_param])
@@ -63,10 +65,10 @@ class MonthlyEmployeeAttendanceReport(APIView):
     permission_classes = [IsAuthenticated]
 
     user_param = openapi.Parameter(
-        'user_id', openapi.IN_QUERY, description="User ID", type=openapi.TYPE_INTEGER, required=True
+        "user_id", openapi.IN_QUERY, description="User ID", type=openapi.TYPE_INTEGER, required=True
     )
     month_param = openapi.Parameter(
-        'month', openapi.IN_QUERY, description="Moth in YYYY-MM format", type=openapi.TYPE_STRING, required=False
+        "month", openapi.IN_QUERY, description="Moth in YYYY-MM format", type=openapi.TYPE_STRING, required=False
     )
 
     @swagger_auto_schema(manual_parameters=[month_param, user_param])
@@ -119,7 +121,7 @@ class EmployeeLeaveHistoryReport(APIView):
     permission_classes = [IsAuthenticated]
 
     employee_param = openapi.Parameter(
-        'employee_id', openapi.IN_QUERY, description="Employee ID", type=openapi.TYPE_INTEGER, required=True
+        "employee_id", openapi.IN_QUERY, description="Employee ID", type=openapi.TYPE_INTEGER, required=True
     )
 
     @swagger_auto_schema(manual_parameters=[employee_param])
@@ -145,3 +147,24 @@ class EmployeeLeaveHistoryReport(APIView):
         return Response(data)
 
 
+class EmployeeLeaveBalanceReport(APIView):
+    """
+    API endpoint to retrieve the leave balance for a specific employee.
+    Query Parameters:
+    - employee_id (int): user ID of the employee whose leave balance is to be retrieved.
+    Returns the leave balance of an employee.:
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    user_id_param = openapi.Parameter(
+        "user_id", openapi.IN_QUERY, description='USER ID', type=openapi.TYPE_INTEGER, required=True
+    )
+
+    @swagger_auto_schema(manual_parameters=[user_id_param])
+    def get(self, request):
+        user_id = request.query_params.get("user_id")
+
+        employee = UserProfile.objects.filter(user_id=user_id).first()
+
+        return Response({"leave_balance": employee.leave_balance})
