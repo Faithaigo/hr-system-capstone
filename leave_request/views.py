@@ -30,6 +30,7 @@ class LeaveRequestViewSet(ModelViewSet):
         - Ensures the request is still pending before approving.
         - Updates the status to 'Approved'.
         - Records who reviewed the request and the timestamp.
+        - Updates the leave_balance in the UserProfile table
 
         Args:
             request: The HTTP request object.

@@ -7,7 +7,8 @@ class LeaveRequestSerializer(serializers.ModelSerializer):
     """
     Serializer for creating and retrieving LeaveRequest objects.
 
-    Ensures that when a leave request is created, its initial status is set to 'Pending'.
+    Ensures that when a leave request is created, its initial status is set to 'Pending'
+    Ensures that a user cannot request for more than 21 days.
     All fields are included, but the 'status' field is read-only from the client side.
    """
 
