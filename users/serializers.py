@@ -63,7 +63,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ['id', 'user', 'department', 'role', 'position', 'phone', 'address', 'profile_image']
+        fields = ['id', 'user', 'department', 'role', 'position', 'phone', 'address', 'profile_image','leave_balance']
 
     def create(self, validated_data):
         """

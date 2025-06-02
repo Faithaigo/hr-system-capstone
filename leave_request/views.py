@@ -5,9 +5,11 @@ from .serializers import LeaveRequestSerializer
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from datetime import datetime
+from users.models import UserProfile
+from utils.date_utils import calculate_difference
+
 
 class LeaveRequestViewSet(ModelViewSet):
-
     """
     A viewset for handling leave request operations.
 
@@ -40,7 +42,7 @@ class LeaveRequestViewSet(ModelViewSet):
             leave = LeaveRequest.objects.get(pk=pk)
 
             if leave.status == 'Approved':
-                return Response({'detail': 'This leave has been approved'}, status=400)
+                return Response({'detail': 'This leave has already been approved'}, status=400)
             elif leave.status != 'Pending':
                 return Response({'detail': 'Only pending requests can be approved'}, status=400)
             leave.status = 'Approved'
@@ -48,10 +50,25 @@ class LeaveRequestViewSet(ModelViewSet):
             leave.reviewed_at = datetime.now()
             leave.save()
 
+            employee_leave = LeaveRequest.objects.filter(employee_id=leave.employee_id).all()
+
+            annual_leave_days = 21
+            no_days = 0
+
+            for request in employee_leave:
+                days = calculate_difference(request.start_date, request.end_date)
+                no_days += days
+
+            leave_balance = annual_leave_days - no_days
+
+            employee = UserProfile.objects.filter(user_id=leave.employee_id).first()
+            employee.leave_balance = leave_balance
+            employee.save()
+
             return Response({'message': 'Leave approved successfully'})
 
         except LeaveRequest.DoesNotExist:
-            return Response({'detail':'Leave request not found'}, status=404)
+            return Response({'detail': 'Leave request not found'}, status=404)
 
     @action(detail=True, methods=['post'])
     def reject(self, request, pk=None):
