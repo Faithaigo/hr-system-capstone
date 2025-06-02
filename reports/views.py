@@ -53,7 +53,7 @@ class DailyTeamAttendanceReport(APIView):
 class MonthlyEmployeeAttendanceReport(APIView):
     """
     Returns attendance records for a single employee for a given month.
-    Query param: ?month=YYYY-MM&employee_id=1
+    Query param: ?month=YYYY-MM&user_id=1
 
     For each date, it returns
         - Date
@@ -68,7 +68,7 @@ class MonthlyEmployeeAttendanceReport(APIView):
         "user_id", openapi.IN_QUERY, description="User ID", type=openapi.TYPE_INTEGER, required=True
     )
     month_param = openapi.Parameter(
-        "month", openapi.IN_QUERY, description="Moth in YYYY-MM format", type=openapi.TYPE_STRING, required=False
+        "month", openapi.IN_QUERY, description="Month in YYYY-MM format", type=openapi.TYPE_STRING, required=False
     )
 
     @swagger_auto_schema(manual_parameters=[month_param, user_param])
@@ -107,7 +107,7 @@ class EmployeeLeaveHistoryReport(APIView):
     API endpoint to retrieve the leave history for a specific employee.
 
     Query Parameters:
-        - employee_id (int): ID of the employee whose leave history is to be retrieved.
+        - user_id (int): User ID of the employee whose leave history is to be retrieved.
 
     Returns a list of leave records with the following details:
         - Date of request creation
@@ -121,15 +121,15 @@ class EmployeeLeaveHistoryReport(APIView):
     permission_classes = [IsAuthenticated]
 
     employee_param = openapi.Parameter(
-        "employee_id", openapi.IN_QUERY, description="Employee ID", type=openapi.TYPE_INTEGER, required=True
+        "user_id", openapi.IN_QUERY, description="User ID", type=openapi.TYPE_INTEGER, required=True
     )
 
     @swagger_auto_schema(manual_parameters=[employee_param])
     def get(self, request):
-        employee_id = request.query_params.get("employee_id")
+        user_id = request.query_params.get("user_id")
 
         leave_history = LeaveRequest.objects.filter(
-            employee_id = employee_id
+            employee_id = user_id
         )
 
         data = []
@@ -151,7 +151,7 @@ class EmployeeLeaveBalanceReport(APIView):
     """
     API endpoint to retrieve the leave balance for a specific employee.
     Query Parameters:
-    - employee_id (int): user ID of the employee whose leave balance is to be retrieved.
+    - user_id (int): user ID of the employee whose leave balance is to be retrieved.
     Returns the leave balance of an employee.:
     """
 
