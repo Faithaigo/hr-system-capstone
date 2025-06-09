@@ -11,6 +11,12 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 import os.path
 from pathlib import Path
+import environ
+import os
+
+env = environ.Env(
+    DEBUG=(bool, False),
+)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -18,13 +24,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
+#Take the environment variables from the .env file
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-r*n4^rolmhg08#z*+pb5pggcgqi2^x#+$ampvsx@4s1--n8h@$'
+SECRET_KEY = env('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env('DJANGO_ALLOWED_HOSTS', default='127.0.0.1').split(',')
 
 # Application definition
 
@@ -81,10 +89,12 @@ WSGI_APPLICATION = 'hrsystem.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'OPTIONS': {
-            'read_default_file': os.path.join(BASE_DIR,'my.cnf'),
-        },
+        'ENGINE': 'django.db.backends.{}'.format(env('DATABASE_ENGINE', default='sqlite3')),
+        'NAME': env('DATABASE_NAME', default="hr_db"),
+        'USER': env('DATABASE_USERNAME', default="myusername"),
+        'PASSWORD': env('DATABASE_PASSWORD', default="password"),
+        'HOST': env('DATABASE_HOST', default='127.0.0.1'),
+        'PORT': env('DATABASE_PORT',default='3306'),
     }
 }
 
@@ -145,6 +155,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

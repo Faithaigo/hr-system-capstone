@@ -1,0 +1,46 @@
+name: Hr management CI with Docker
+
+on:
+  push:
+    branches:
+      - main
+    pull_request:
+      branches:
+        - main
+jobs:
+  build_and_test:
+    runs_on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: ci_user
+          POSTGRES_PASSWORD: ci_password
+          POSTGRES_DB: ci_test_db
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker BuildX
+        uses: docker/setup-buildx-actions@v3
+
+      - name: Build Docker image
+        run: docker build -t django-app-test .
+
+      - name: Run Django tests in Docker container
+        env:
+          DJANGO_SECRET_KEY : ${{ secrets.DJANGO_TEST_SECRET_KEY }}
+          DATABASE_URL: postgres://ci_user:ci_password@localhost:5432/ci_test_db
+          DEBUG: "True"
+        run: | # The commands to execute in the container
+          docker run --rm \ # Run the container and automatically remove it after it finishes
+            --env DJANGO_SECRET_KEY="${{ env.DJANGO_SECRET_KEY }}" \ # Pass the environment variable into the container
+            --env DATABASE_URL="${{ env.DATABASE_URL }}" \
+            --env DEBUG="${{ env.DEBUG }}" \
+            --network host \ # Allow the container to access services on the host machine (like our postgres service)
+            django-app-test sh -c "python manage.py makemigrations --check --dry-run && python manage.py migrate && python manage.py test"
