@@ -44,7 +44,7 @@ jobs:
       - name: Run Django tests
         env:
           # Set Django SECRET_KEY for tests (use a dummy one for CI)
-          SECRET_KEY: ${{ secrets.DJANGO_TEST_SECRET_KEY }}
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_TEST_SECRET_KEY }}
           # Database configuration for tests (if using the 'services' block)
           DATABASE_URL: postgres://ci_user:ci_password@localhost:5432/ci_test_db
           # Any other environment variables your tests need
