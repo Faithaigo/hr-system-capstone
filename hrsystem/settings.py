@@ -90,9 +90,9 @@ WSGI_APPLICATION = 'hrsystem.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.{}'.format(env('DATABASE_ENGINE', default='sqlite3')),
-        'NAME': env('DATABASE_NAME'),
-        'USER': env('DATABASE_USERNAME'),
-        'PASSWORD': env('DATABASE_PASSWORD'),
+        'NAME': env('DATABASE_NAME', default="hr_db"),
+        'USER': env('DATABASE_USERNAME', default="myusername"),
+        'PASSWORD': env('DATABASE_PASSWORD', default="password"),
         'HOST': env('DATABASE_HOST', default='127.0.0.1'),
         'PORT': env('DATABASE_PORT',default='3306'),
     }
@@ -155,6 +155,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
