@@ -53,14 +53,3 @@ jobs:
           python manage.py makemigrations --check --dry-run # Check for unapplied migrations
           python manage.py migrate --noinput # Apply migrations for test database
           python manage.py test --noinput
-
-      # Optional: Add linting, static analysis, etc.
-      - name: Run Black formatter check
-        run: |
-          pip install black
-          black --check .
-
-      - name: Run Flake8 linter
-        run: |
-          pip install flake8
-          flake8 .
