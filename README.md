@@ -6,7 +6,7 @@ This README provides instructions for setting up the project locally using Docke
 
 If you just want to explore the project without setting up your local environment, you can access the live demo here:
 
-[**Click here to visit the live demo!**](https://hr-system-management-app.onrender.com)
+[**Click here to visit the live demo!**](https://hr-system-management-app.onrender.com/swagger/)
 
 ---
 
