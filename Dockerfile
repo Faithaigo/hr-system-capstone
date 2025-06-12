@@ -26,6 +26,10 @@ RUN adduser -D appuser && mkdir /app && chown -R appuser /app
 COPY --from=builder /usr/local/lib/python3.12/site-packages/ /usr/local/lib/python3.12/site-packages/
 COPY --from=builder /usr/local/bin/ /usr/local/bin/
 
+
+# Install netcat-openbsd for entrypoint.sh (using apk for Alpine)
+RUN apk update && apk add --no-cache netcat-openbsd
+
 # Set workdir and copy app
 WORKDIR /app
 COPY --chown=appuser:appuser . .
@@ -39,11 +43,17 @@ RUN DJANGO_SECRET_KEY=not-a-real-key-for-build-time python manage.py collectstat
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
+# Copy and prepare entrypoint script
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 # Switch to non-root user
 USER appuser
 
 # Expose port
 EXPOSE 8000
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 # Start the application
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "hrsystem.wsgi:application"]
