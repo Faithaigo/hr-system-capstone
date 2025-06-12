@@ -1,14 +1,12 @@
-# My Awesome Django Project
+# Human Resource Management system
 
-Welcome to My Awesome Django Project! This README provides instructions for setting up the project locally using Docker Compose, and also offers a way to access a live demo if you prefer not to set up.
+This README provides instructions for setting up the project locally using Docker Compose, and also offers a way to access a live demo if you prefer not to set up.
 
 ## 🚀 Live Demo (No Local Setup Required)
 
 If you just want to explore the project without setting up your local environment, you can access the live demo here:
 
-[**Click here to visit the live demo!**](YOUR_LIVE_DEMO_URL_HERE)
-
-(Replace `YOUR_LIVE_DEMO_URL_HERE` with the actual URL where your project is deployed, e.g., Heroku, Render, Vercel, your own server.)
+[**Click here to visit the live demo!**](https://hr-system-management-app.onrender.com)
 
 ---
 
@@ -30,5 +28,75 @@ Before you begin, ensure you have the following installed on your system:
 First, clone the project repository to your local machine:
 
 ```bash
-git clone [https://github.com/your-username/your-project-repo.git](https://github.com/your-username/your-project-repo.git)
-cd your-project-repo
+git clone https://github.com/Faithaigo/hr-system-capstone.git
+cd hr-capstone-system
+```
+
+### 2. Create Environment Variables
+
+Create a ``.env`` file in the root of the project directory (where ``compose.yml`` is located). This stores sensitive information and configurations.
+Open the ``.env`` file and add the following minimal required variables. 
+
+```bash
+DJANGO_SECRET_KEY=your_generated_secret_key
+DEBUG=TRUE
+DJANGO_ALLOWED_HOSTS=127.0.0.1,0.0.0.0
+DJANGO_LOGLEVEL=info
+DATABASE_ENGINE=postgresql
+DATABASE_NAME=yourdb
+DATABASE_USERNAME=youruser
+DATABASE_PASSWORD=yourpassword
+DATABASE_HOST=db #Service name in compose.yml
+DATABASE_PORT=5432
+```
+
+### 3. Build and Run the Containers
+
+Navigate to the root of the project where ``compose.yml`` is located and run:
+
+```bash
+docker compose up --build -d
+```
+
+### 4. Create a Superuser
+You'll need to create a superuser to access the API endpoints:
+
+```bash
+docker compose run --rm django-web python manage.py createsuperuser
+```
+
+Follow the prompts to set up your username, email, and password.
+
+### 5. Access the Application
+
+The application should now be running and accessible at:
+
+[http://localhost:8000](http://localhost:8000)
+
+You can access the Django Admin panel at:
+
+[http://localhost:8000/admin/](http://localhost:8000/admin/)
+
+### 6. Access API Documentation
+
+Once the application is running, you can access the interactive API documentation (powered by Swagger UI) at:
+
+[http://localhost:8000/swagger/](http://localhost:8000/swagger/)
+
+### 7. Run Tests
+
+To run the tests:
+
+```bash
+docker compose run --rm django-web python manage.py test
+```
+
+### 8. Stopping the Project
+
+To stop all running containers without removing their data:
+
+```bash
+docker compose stop
+```
+
+
