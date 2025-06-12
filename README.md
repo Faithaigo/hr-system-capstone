@@ -40,7 +40,7 @@ Open the ``.env`` file and add the following minimal required variables.
 ```bash
 DJANGO_SECRET_KEY=your_generated_secret_key
 DEBUG=TRUE
-DJANGO_ALLOWED_HOSTS=127.0.0.1,0.0.0.0
+DJANGO_ALLOWED_HOSTS=localhost,0.0.0.0
 DJANGO_LOGLEVEL=info
 DATABASE_ENGINE=postgresql
 DATABASE_NAME=yourdb
