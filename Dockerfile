@@ -1,5 +1,5 @@
 # Stage 1: Base build stage
-FROM python:3.12-alpine AS builder
+FROM python:3.12-slim AS builder
 
 # Create app directory
 RUN mkdir /app
@@ -17,7 +17,7 @@ COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Stage 2: Production stage
-FROM python:3.12-alpine
+FROM python:3.12-slim
 
 # Create app user and directory
 RUN adduser -D appuser && mkdir /app && chown -R appuser /app
