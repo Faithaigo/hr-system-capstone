@@ -8,6 +8,7 @@ from calendar import monthrange
 from leave_request.models import LeaveRequest
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from django.utils.timezone import now
 
 from users.models import UserProfile
 
@@ -32,7 +33,8 @@ class DailyTeamAttendanceReport(APIView):
 
     @swagger_auto_schema(manual_parameters=[date_param])
     def get(self, request):
-        today = request.query_params.get('date')
+        current_date = now().strftime("%Y-%m-%d")
+        today = request.query_params.get('date', current_date)
         report = []
 
         users = User.objects.all()
@@ -73,7 +75,9 @@ class MonthlyEmployeeAttendanceReport(APIView):
 
     @swagger_auto_schema(manual_parameters=[month_param, user_param])
     def get(self, request):
-        month_str = request.query_params.get('month')
+
+        current_month = now().strftime("%Y-%m")
+        month_str = request.query_params.get('month', current_month)
         user_id = request.query_params.get("user_id")
 
         if not month_str:
